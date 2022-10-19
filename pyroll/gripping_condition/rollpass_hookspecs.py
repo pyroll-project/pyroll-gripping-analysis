@@ -22,6 +22,26 @@ if not hasattr(RollPass.plugin_manager.hook, "lower_left_intersection_point"):
 
 
 @RollPass.hookspec
+def first_ekelund_friction_coefficient(roll_pass: RollPass):
+    """Coefficient for Ekelunds friction model"""
+
+
+@RollPass.hookspec
+def second_ekelund_friction_coefficient(roll_pass: RollPass):
+    """Coefficient for Ekelunds friction model"""
+
+
+@RollPass.hookspec
+def third_ekelund_friction_coefficient(roll_pass: RollPass):
+    """Coefficient for Ekelunds friction model"""
+
+
+@RollPass.hookspec
+def ekelund_friction_coefficient(roll_pass: RollPass):
+    """Ekelunds friction model"""
+
+
+@RollPass.hookspec
 def coulomb_friction_coefficient(roll_pass: RollPass):
     """Friction coefficient of Coulombs friction model"""
 
