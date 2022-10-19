@@ -10,7 +10,7 @@ def test_solve(tmp_path: Path, caplog):
     caplog.set_level(logging.DEBUG, logger="pyroll")
 
     import pyroll.basic
-    import pyroll.gripping_condition
+    import pyroll.gripping_analysis
 
     solve(sequence, in_profile)
 

@@ -1,4 +1,4 @@
-from pyroll.gripping_condition.pillar_element import Pillar
+from pyroll.gripping_analysis.pillar_element import Pillar
 
 from pyroll.core import RollPass
 from pyroll.ui import Reporter

@@ -19,15 +19,15 @@ class Pillar:
         self.pillar_discretization_points = np.linspace(self.pillar_body.bounds[0], self.pillar_body.bounds[2], num=25)
         self.line_strings_list = list((self.upper_groove_contour, self.upper_profile_contour, self.lower_groove_contour, self.lower_profile_contour))
         self.line_string_interpolations = self.interpolation_from_linestring()
-        self.distance_array = self.calculate_distance_array()
-        self.max_height_reduction = np.max(self.distance_array)
+        self.height_reductions_array = self.calculate_reduction_array()
+        self.mean_height_reduction = np.mean(self.height_reductions_array)
 
     def interpolation_from_linestring(self):
         return [interpolate.interp1d(*line_string.xy) for line_string in self.line_strings_list]
 
-    def calculate_distance_array(self):
+    def calculate_reduction_array(self):
         equidistant_line_string_y_coordinates = [interpolations(self.pillar_discretization_points) for interpolations in self.line_string_interpolations]
-        upper_distance_array = np.abs(equidistant_line_string_y_coordinates[1] - equidistant_line_string_y_coordinates[0])
-        lower_distance_array = np.abs(equidistant_line_string_y_coordinates[3] - equidistant_line_string_y_coordinates[2])
+        upper_reduction_array = np.abs(equidistant_line_string_y_coordinates[1] - equidistant_line_string_y_coordinates[0])
+        lower_reduction_array = np.abs(equidistant_line_string_y_coordinates[3] - equidistant_line_string_y_coordinates[2])
 
-        return upper_distance_array + lower_distance_array
+        return upper_reduction_array + lower_reduction_array

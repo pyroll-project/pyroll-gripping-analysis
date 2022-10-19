@@ -48,7 +48,7 @@ def unit_plot(unit: RollPass):
 @for_units(RollPass)
 def unit_properties(unit: RollPass):
     return dict(
+        maximum_local_height_reduction=f"{unit.max_height_reduction[0]:.4e}",
         grip_angle=f"{np.rad2deg(unit.roll.gripping_angle[0]):.4e}",
         passed_gripping_condition=f"{unit.roll.gripping_evaluation[0]}"
-
     )

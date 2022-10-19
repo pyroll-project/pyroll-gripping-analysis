@@ -100,7 +100,7 @@ def pillar_elements(roll_pass: RollPass):
 
 @RollPass.hookimpl
 def max_height_reduction(roll_pass: RollPass):
-    reductions = [pillar.max_height_reduction for pillar in roll_pass.pillar_elements]
+    reductions = [pillar.mean_height_reduction for pillar in roll_pass.pillar_elements]
 
     max_reduction = []
     for red in reductions:
@@ -112,7 +112,7 @@ def max_height_reduction(roll_pass: RollPass):
 
 @RollPass.hookimpl
 def point_of_max_height_reduction(roll_pass: RollPass):
-    reductions = [pillar.max_height_reduction for pillar in roll_pass.pillar_elements]
+    reductions = [pillar.mean_height_reduction for pillar in roll_pass.pillar_elements]
     pillar_index_for_max_height_reduction = np.flatnonzero(reductions == np.max(reductions))
 
     if isinstance(pillar_index_for_max_height_reduction, np.ndarray):
