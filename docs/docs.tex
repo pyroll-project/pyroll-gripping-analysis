@@ -30,9 +30,16 @@
 
     \begin{figure}
         \centering
-        \includegraphics[width=.7\linewidth]{img/overlapping-area}
+        \includegraphics[width=.7\linewidth]{img/intersection_points}
         \caption{Intersection points A to D for a round - oval roll pass}
         \label{fig:overlapping-intersection-points}
+    \end{figure}
+
+    \begin{figure}
+        \centering
+        \includegraphics[width=.7\linewidth]{img/overlapping-area}
+        \caption{Overlapping area of incoming profile and groove discretized by pillar elements}
+        \label{fig:roll-gap-profile-with-pillars}
     \end{figure}
 
     Using the pilar elements, the local height change is calculated.
@@ -41,17 +48,73 @@
     From these points the local reduction is evaluated for the upper and lower part of the pillar (see figure ).
     Using the values, the arithmetic mean value of the reduction for the pilar element is calculated.
     After conducting this evaluation for all pillars, the point for the maximum height reduction in z - direction is searched using numpy.
-    The resulting z-coordinate ($z(\Delta h = \Delta h_{max})$) is used to calculate the local radius of the work roll.
-    This is done by subtracting the local grooves depth at the position and the nominal roll radius ($R_{gripping}$).
-    Through this information,
+    The resulting z-coordinate ($z(\Delta h = \Delta h_{\max})$) is used to calculate the local radius of the work roll ($R_{g}$).
+    This is done by subtracting the local grooves depth at the position and the nominal roll radius.
+    Through this information, the geometric gripping analysis can be evaluated.
+    The first assumption for the analysis is that sliding friction,
+    represented by Coulombs friction model through a mean friction coefficient $\mu$ is valid for the point of entry of the profile into the roll gap.
+    Friction during rolling is necessary to ensure that the rolled material is drawn into the roll gap without external forces.
+    These boundary conditions due to friction are called gripping and pull through conditions.
+    Figure~\ref{fig:roll-gap-forces} shows the force conditions in the roll gap during gripping.
+
+    \begin{figure}
+        \centering
+        \includegraphics[width=.7\linewidth]{img/overlapping-area}
+        \caption{Force acting at the point of gripping in the roll gap}
+        \label{fig:roll-gap-forces}
+    \end{figure}
+
+    Due to friction, the normal force $F_N$ generates a tangential force $F_T$, see equation~\ref{eq:tangential-force}.
+
+    \begin{equation}
+        F_T = \mu \F_N
+        \label{eq:tangential-force}
+    \end{equation}
+
+    In order for the incoming profile to be drawn into the roll gap, the forces drawing the material into the roll gap ($F_D$),
+    must be greater than the ejecting force ($F_E$), so that equation~\ref{eq:forces-while-gripping} applies.
+
+    \begin{equation}
+        F_D = \mu F_N \cos\left( \alpha_{g} \right) \geq F_E = \mu F_N \sin\left( \alpha_{g}  \right)
+        \label{eq:forces-while-gripping}
+    \end{equation}
+
+    From this the grip condition can be determined, see equation~\ref{eq:gripping-condition}.
+
+    \begin{equation}
+        \mu \geq \tan\left( \alpha_{g} \right)
+        \label{eq:gripping-condition}
+    \end{equation}
+
+    The second assumption used for this case, is that the initial contact point between profile and roll happens at a distance which is represented by the contact length.
+
+    \begin{equation}
+        L_{d, g} = \sqrt{R_{g} \Delta h_{max} - \frac{\Delta h_{max}^2}{4}}
+        \label{eq:contact-length-gripping}
+    \end{equation}
+
+    This is valid only for the case, that the material of both the roll and the profile behaves purely plastic.
+    Using this assumption, the rolling angle $\alpha$ can be calculated using trigonometric relations.
+
+    \begin{equation}
+        \alpha_g = \arcsin\left( \frac{L_{d, g}}{R_{g}} \right)
+        \label{eq:gripping-angle}
+    \end{equation}
+
+    For calculation of the friction coefficient, the simple model by Ekelund~\cite{Ekelund_1927} is implemented.
+
+    \begin{equation}
+        \mu = K_1 K_2 K_3 \left( 1.05 - 0.0005 * \vartheta \right)
+        \label{eq:ekelund-friction-coefficient-model}
+    \end{equation}
 
 
     \section{Usage instructions}\label{sec:usage-instructions}
 
-    The plugin can be loaded under the name \texttt{pyroll\_work\_roll\_elastic\_deformation}.
-    Besides the hooks \lstinline{youngs_modulus}, the implemented \lstinline{body} hook is the entry point for the calculation.
-    The calculation is done, using the classes \listinline{DiskElement}, \listinline{RollBody} and \listinline{MatrixMethod}.
-    Several additional hooks on \lstinline{RollPass.Roll} are defined, which are used for calculation, as listed in \autoref{tab:hookspecs}.
+    The plugin can be loaded under the name \texttt{pyroll\_gripping\_analysis}.
+    Besides the hooks \lstinline{gripping-angle}, the implemented \lstinline{number\_of\_pillar\_elements} hook is the entry point for the calculation.
+    The calculation is done, using the class \listinline{PillarElement}.
+    Several additional hooks on \lstinline{RollPass}, \lstinline{RollPass.Roll} and \lstinline{RollPass.InProfile} are defined, which are used for calculation, as listed in \autoref{tab:hookspecs}.
 
     \begin{table}
         \centering
@@ -59,16 +122,22 @@
         \label{tab:hookspecs}
         \begin{tabular}{ll}
             \toprule
-            Hook name                        & Meaning                                                       \\
+            Hook name                                       & Meaning                                                                         \\
             \midrule
-            \texttt{matrix\_method\_results} & Results of the matrix method as an array of arrays            \\
-            \texttt{disk\_elements}          & Array of disk elements used for discretization of the grooves \\
-            \texttt{deflection}              & Array of the deflection                                       \\
-            \texttt{inclination}             & Array of the inclination                                      \\
-            \texttt{bending\_moment}         & Array of the bending moment                                   \\
-            \texttt{shear\_force}            & Array of the shear force                                      \\
-
-
+            \texttt{first\_ekelund\_friction\_coefficient}  & $K_1$ of Ekelunds friction model                                                \\
+            \texttt{second\_ekelund\_friction\_coefficient} & $K_2$ of Ekelunds friction model                                                \\
+            \texttt{third\_ekelund\_friction\_coefficient}  & $K_3$ of Ekelunds friction model                                                \\
+            \texttt{ekelund\_friction\_coefficient}         & $\mu$ resulting from Ekelunds friction model                                    \\
+            \texttt{coulomb\_friction\_coefficient}         & Coulombs friction coefficient, defaults to the result of Ekelunds model         \\
+            \texttt{upper\_left\_intersection\_point}       & upper left intersection point $A$ in~\ref{fig:overlapping-intersection-points}  \\
+            \texttt{upper\_right\_intersection\_point}      & upper right intersection point $B$ in~\ref{fig:overlapping-intersection-points} \\
+            \texttt{lower\_left\_intersection\_point}       & lower left intersection point $D$ in~\ref{fig:overlapping-intersection-points}  \\
+            \texttt{lower\_right\_intersection\_point}      & lower right intersection point $C$ in~\ref{fig:overlapping-intersection-points} \\
+            \texttt{pillar\_elements}                       & List of pillar elements with respected properties                               \\
+            \texttt{max\_height\_reduction}                 & List of maximum height reductions                                               \\
+            \texttt{point\_of\_max\_height\_reduction}      & List of positions of maximum height reductions                                  \\
+            \texttt{gripping\_angle}                        & List of angles resulting of maximum height reductions                           \\
+            \texttt{gripping\_evaluation}                   & Result of gripping condition according to equation~\ref{eq:gripping-condition}  \\
             \bottomrule
         \end{tabular}
     \end{table}

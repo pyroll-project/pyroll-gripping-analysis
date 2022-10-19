@@ -5,8 +5,8 @@ description = "Plugin for PyRoll calculating and analysing the geometric grippin
 authors = ["Christoph Renzing <christoph.renzing@imf.tu-freiberg.de>"]
 license = "BSD-3-Clause"
 homepage = "https://pyroll-project.github.io/"
-repository = "https://github.com/pyroll-project/pyroll-gripping-condition"
-documentation = "https://pyroll-project.github.io/modules/pyroll-gripping-condition/docs/docs"
+repository = "https://github.com/pyroll-project/pyroll-gripping-analysis"
+documentation = "https://pyroll-project.github.io/modules/pyroll-gripping-analysis/docs/docs"
 packages = [
     { include = "pyroll/gripping-analysis" }
 ]
