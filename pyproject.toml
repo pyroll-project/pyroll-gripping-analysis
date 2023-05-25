@@ -1,5 +1,5 @@
 [project]
-name = "pyroll-gripping-anlysis" # insert the name of yout plugin here
+name = "pyroll-gripping-analysis" # insert the name of yout plugin here
 description = "Plugin for PyRoll calculating and analysing the geometric gripping condition."
 authors = [
     { name = "Christoph Renzing", email = "christoph.renzing@imf.tu-freiberg.de" }

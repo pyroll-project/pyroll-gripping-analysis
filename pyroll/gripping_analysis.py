@@ -4,7 +4,7 @@ import numpy as np
 from pyroll.core import RollPass
 from pyroll.core.hooks import Hook, root_hooks
 
-VERSION = "2.0"
+VERSION = "2.0.1"
 GRIPPING_ELEMENT_COUNT = 11
 
 RollPass.gripping_elements = Hook[np.ndarray]()
@@ -19,8 +19,9 @@ RollPass.passed_gripping_condition = Hook[bool]()
 
 @RollPass.gripping_elements
 def gripping_elements(self: RollPass):
-    dw = self.in_profile.width / 2 / (GRIPPING_ELEMENT_COUNT - 0.5)
-    return np.arange(0, self.in_profile.width / 2, dw)
+    inter_width = self.usable_cross_section.boundary.intersection(self.in_profile.cross_section.boundary).bounds[3]
+    dw = inter_width / 2 / (GRIPPING_ELEMENT_COUNT - 0.5)
+    return np.arange(0, inter_width / 2, dw)
 
 
 @RollPass.gripping_elements_heights
@@ -45,8 +46,8 @@ def passed_gripping_condition(self: RollPass):
         return None
 
     entry_points_sol = [
-        scipy.optimize.root_scalar(lambda x: height - self.gap / 2 - self.roll.surface_interpolation(x, center),
-                                   x0=-self.roll.contact_length, x1=-self.roll.contact_length * 1.1)
+        scipy.optimize.root_scalar(lambda x: height - self.gap - 2 * self.roll.surface_interpolation(x, center),
+                                   x0=-self.roll.contact_length * 0.75, x1=-self.roll.contact_length * 1.25)
         for center, height in zip(self.gripping_elements, self.gripping_elements_heights)
     ]
 
