@@ -1,4 +1,4 @@
-# PyRoll Gripping Analysis
+# PyRolL Gripping Analysis
 
 Plugin for PyRolL providing the calculation and evaluation of the geometric gripping condition is fulfilled.
 
