@@ -4,7 +4,7 @@ import numpy as np
 from pyroll.core import RollPass
 from pyroll.core.hooks import Hook, root_hooks
 
-VERSION = "2.0.1"
+VERSION = "2.0.0"
 GRIPPING_ELEMENT_COUNT = 11
 
 RollPass.gripping_elements = Hook[np.ndarray]()
