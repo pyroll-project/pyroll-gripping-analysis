@@ -3,6 +3,7 @@ import scipy
 import numpy as np
 from pyroll.core import RollPass
 from pyroll.core.hooks import Hook, root_hooks
+import pyroll.interface_friction
 
 VERSION = "2.0.0"
 GRIPPING_ELEMENT_COUNT = 11
