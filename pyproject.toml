@@ -1,5 +1,5 @@
 [project]
-name = "pyroll-gripping-analysis" # insert the name of yout plugin here
+name = "pyroll-gripping-analysis"
 description = "Plugin for PyRoll calculating and analysing the geometric gripping condition."
 authors = [
     { name = "Christoph Renzing", email = "christoph.renzing@imf.tu-freiberg.de" }
@@ -7,7 +7,7 @@ authors = [
 license = "BSD-3-Clause"
 requires-python = ">=3.9, <4.0"
 dependencies = [
-    "pyroll-core ~= 2.0",
+    "pyroll-core ~= 2.1",
     "pyroll-interface-friction ~= 2.0"
 ]
 
