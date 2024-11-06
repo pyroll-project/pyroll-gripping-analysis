@@ -304,7 +304,7 @@ def test_solve_imf_conti(tmp_path: Path, caplog):
 
         report = report(sequence)
         f = tmp_path / "report.html"
-        f.write_text(report)
+        f.write_text(report, encoding="utf-8")
         webbrowser.open(f.as_uri())
 
     except ImportError:

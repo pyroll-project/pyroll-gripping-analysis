@@ -3,37 +3,37 @@ import scipy
 import shapely
 import numpy as np
 
-from pyroll.core import RollPass, PassSequence, Unit
+from pyroll.core import BaseRollPass, PassSequence, Unit
 from pyroll.core.hooks import Hook, root_hooks
 
-VERSION = "2.0.2"
+VERSION = "3.0.0"
 GRIPPING_ELEMENT_COUNT = 15
 
-RollPass.gripping_elements = Hook[np.ndarray]()
+BaseRollPass.gripping_elements = Hook[np.ndarray]()
 """Array of z-coordinates of the gripping elements centers from core to side."""
 
-RollPass.gripping_elements_heights = Hook[np.ndarray]()
+BaseRollPass.gripping_elements_heights = Hook[np.ndarray]()
 """Heights of the gripping elements."""
 
-RollPass.bite_angles = Hook[np.ndarray]()
+BaseRollPass.bite_angles = Hook[np.ndarray]()
 """Angles of bite."""
 
-RollPass.mean_bite_angle = Hook[float]()
+BaseRollPass.mean_bite_angle = Hook[float]()
 """Mean bite angle of the roll pass."""
 
-RollPass.passed_gripping_condition = Hook[bool]()
+BaseRollPass.passed_gripping_condition = Hook[bool]()
 """Array of entry points of the gripping elements."""
 
 
-@RollPass.gripping_elements
-def gripping_elements(self: RollPass):
+@BaseRollPass.gripping_elements
+def gripping_elements(self: BaseRollPass):
     inter_width = self.usable_cross_section.boundary.intersection(self.in_profile.cross_section.boundary).bounds[3]
     dw = inter_width / 2 / (GRIPPING_ELEMENT_COUNT - 0.5)
     return np.arange(0, inter_width / 2, dw)
 
 
-@RollPass.gripping_elements_heights
-def gripping_elements_heights(self: RollPass):
+@BaseRollPass.gripping_elements_heights
+def gripping_elements_heights(self: BaseRollPass):
     element_heights = np.array(
         [
             shapely.intersection(
@@ -48,8 +48,8 @@ def gripping_elements_heights(self: RollPass):
     return element_heights
 
 
-@RollPass.bite_angles
-def bite_angles(self: RollPass):
+@BaseRollPass.bite_angles
+def bite_angles(self: BaseRollPass):
     if not self.roll.has_set_or_cached("contact_length"):
         return None
 
@@ -71,13 +71,13 @@ def bite_angles(self: RollPass):
     return bite_angles
 
 
-@RollPass.mean_bite_angle
-def mean_bite_angle(self: RollPass):
+@BaseRollPass.mean_bite_angle
+def mean_bite_angle(self: BaseRollPass):
     return np.mean(self.bite_angles)
 
 
-@RollPass.passed_gripping_condition
-def passed_gripping_condition(self: RollPass):
+@BaseRollPass.passed_gripping_condition
+def passed_gripping_condition(self: BaseRollPass):
     results = []
     for bite_angle in self.bite_angles:
         if np.tan(bite_angle) > self.coulomb_friction_coefficient:
@@ -91,9 +91,9 @@ def passed_gripping_condition(self: RollPass):
         return False
 
 
-root_hooks.add(RollPass.passed_gripping_condition)
-root_hooks.add(RollPass.bite_angles)
-root_hooks.add(RollPass.mean_bite_angle)
+root_hooks.add(BaseRollPass.passed_gripping_condition)
+root_hooks.add(BaseRollPass.bite_angles)
+root_hooks.add(BaseRollPass.mean_bite_angle)
 
 try:
     from pyroll.report.pluggy import hookimpl, plugin_manager
@@ -103,7 +103,7 @@ try:
     @hookimpl(specname="unit_plot")
     def mean_bite_angles_plot(unit: Unit):
         if isinstance(unit, PassSequence):
-            if any(isinstance(subunit, RollPass) for subunit in unit):
+            if any(isinstance(subunit, BaseRollPass) for subunit in unit):
                 fig, ax = create_sequence_plot(unit)
                 ax.set_ylabel(r"Mean Bite Angle $\alpha_0$")
                 ax.set_title("Mean Bite Angle")
@@ -114,7 +114,7 @@ try:
                         [
                             (index, np.rad2deg(unit.mean_bite_angle))
                             for index, unit in enumerate(units)
-                            if isinstance(unit, RollPass)
+                            if isinstance(unit, BaseRollPass)
                         ]
                     )
 
