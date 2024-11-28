@@ -22,7 +22,7 @@ def bite_angle(self: SymmetricRollPass):
 
 @SymmetricRollPass.passed_gripping_condition
 def passed_gripping_condition(self: SymmetricRollPass):
-    if np.tan(self.bite_angle) > self.coulomb_friction_coefficient:
+    if np.tan(self.bite_angle) < self.coulomb_friction_coefficient:
         return True
     else:
         return False
