@@ -6,7 +6,7 @@ import numpy as np
 from pyroll.core import SymmetricRollPass, PassSequence, Unit
 from pyroll.core.hooks import Hook, root_hooks
 
-VERSION = "3.0.0"
+VERSION = "3.0.1"
 
 SymmetricRollPass.bite_angle = Hook[np.ndarray]()
 """Angle of bite."""
