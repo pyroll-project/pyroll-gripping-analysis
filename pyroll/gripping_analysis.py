@@ -5,6 +5,7 @@ import numpy as np
 
 from pyroll.core import SymmetricRollPass, PassSequence, Unit
 from pyroll.core.hooks import Hook, root_hooks
+import pyroll.interface_friction
 
 VERSION = "3.0.0"
 
@@ -22,9 +23,10 @@ def bite_angle(self: SymmetricRollPass):
 
 @SymmetricRollPass.passed_gripping_condition
 def passed_gripping_condition(self: SymmetricRollPass):
-    if np.tan(self.bite_angle) > self.coulomb_friction_coefficient:
+    if np.tan(self.bite_angle) < self.coulomb_friction_coefficient:
         return True
     else:
+        self.logger.warning(f'The gripping condition is not fulfilled for {self}.')
         return False
 
 
